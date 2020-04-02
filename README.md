@@ -24,11 +24,11 @@ docker-compose up -d
 
 or
 
-./test.sh <HOST>
+./test.sh &lt;HOST&gt;
 
 or
 
-./test.sh <HOST> [PORT]
+./test.sh &lt;HOST&gt; [PORT]
 </pre>
 
 Note, that tests will pass just once because autoincrement.
