@@ -22,8 +22,6 @@ RUN apt-get update \
 RUN "${APP_HOME}/composer.phar" require slim/slim:"4.*" slim/psr7 php-di/slim-bridge
 COPY src "${APP_HOME}/src"
 RUN "${APP_HOME}/composer.phar" dump-autoload
-COPY htaccess.tmpl "${APP_HOME}/src/htdocs/.htaccess"
-
 
 ENTRYPOINT ["/opt/skynode/skynode-entrypoint.sh"]
 CMD ["apache2-foreground"]
