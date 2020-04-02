@@ -1,0 +1,17 @@
+version: "3"
+services:
+
+  sky-data:
+    image: aquila:skydata-0.0.1
+    container_name: sky-data
+    environment:
+      - MYSQL_ROOT_PASSWORD=TERCES_POT
+      - MYSQL_NAME=skytest
+
+  sky-node:
+    image: aquila:skynode-0.0.1
+    container_name: sky-node
+    environment:
+      - MYSQL_HOST=sky-data
+    ports:
+      - "2980:80"

@@ -1,0 +1,29 @@
+FROM php:7.2-apache
+
+ENV APP_HOME=/opt/skynode
+ENV APP_DOCUMENT_ROOT="${APP_HOME}/src/htdocs"
+WORKDIR $APP_HOME
+
+COPY skynode-entrypoint.sh $APP_HOME
+COPY composer.json.tmpl "${APP_HOME}/composer.json"
+COPY config.php "${APP_HOME}/src/config.php"
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends zip unzip \
+    && rm -fr /var/lib/apt/lists/* \
+    && a2enmod rewrite \
+    && docker-php-ext-install mysqli pdo_mysql \
+    && sed -ri -e "s!/var/www/html!${APP_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
+    && sed -ri -e "s!/var/www/!${APP_DOCUMENT_ROOT}!g" /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && curl -L https://raw.githubusercontent.com/composer/getcomposer.org/460e5573ef5bbf5f3e9f0de8d253910e4ebeb31c/web/installer | php -- \
+    && chmod +x "${APP_HOME}/composer.phar"
+
+RUN "${APP_HOME}/composer.phar" require slim/slim:"4.*" slim/psr7 php-di/slim-bridge
+COPY src "${APP_HOME}/src"
+RUN "${APP_HOME}/composer.phar" dump-autoload
+COPY htaccess.tmpl "${APP_HOME}/src/htdocs/.htaccess"
+
+
+ENTRYPOINT ["/opt/skynode/skynode-entrypoint.sh"]
+CMD ["apache2-foreground"]
